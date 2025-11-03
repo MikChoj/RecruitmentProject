@@ -1,0 +1,64 @@
+﻿@page
+@model BAERecruitmentProject.Pages.IndexModel
+@{
+    ViewData["Title"] = "Weather observations";
+}
+
+<h1>Weather observations</h1>
+
+<form method="get" class="mb-3">
+    <label for="city">City:</label>
+    <select id="city" name="SelectedCity" onchange="this.form.submit()">
+        @foreach (var city in Model.Cities)
+        {
+            <option value="@city.Name" selected="@(city.Name == Model.SelectedCity ? "selected" : null)">
+                @city.Name
+            </option>
+        }
+    </select>
+</form>
+
+<form method="post">
+    <button type="submit" asp-page-handler="Fetch">Pobierz aktualne dane dla wszystkich miast</button>
+</form>
+
+<form method="post" style="margin-top: 0.5rem;">
+  <div>
+    <label for="start">Start date:</label>
+    <input id="start" type="date" name="StartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+    <label for="end" style="margin-left:0.5rem;">End date:</label>
+    <input id="end" type="date" name="EndDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+  </div>
+  <button type="submit" asp-page-handler="FetchRange" style="margin-top:0.5rem;">Pobierz dane z zakresu dla wszystkich miast</button>
+</form>
+
+<form method="post" style="margin-top: 0.5rem;">
+    <button type="submit" asp-page-handler="Clear">Wyczyść bazę</button>
+</form>
+
+@if (Model.Observations.Count == 0)
+{
+    <p>Brak zapisanych pomiarów dla @Model.SelectedCity.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Miasto</th>
+                <th>Temperatura [°C]</th>
+                <th>Data (UTC)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obs in Model.Observations)
+            {
+                <tr>
+                    <td>@obs.CityName</td>
+                    <td>@obs.TemperatureC</td>
+                    <td>@obs.ObservedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
